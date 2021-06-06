@@ -1,7 +1,12 @@
 FROM php:8-cli
-# RUN apt-get install php-common
-# RUN apt-get update
-# RUN apt-get install composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
-COPY . /usr/src/myapp
-WORKDIR /usr/src/myapp
+RUN mkdir /app
+WORKDIR /app
+COPY ./src .
+RUN composer install
+RUN docker-php-ext-install pdo_mysql
+RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
+RUN apt-get install -y nodejs
+RUN npm install
+RUN npm run dev
+CMD php artisan serve --host 0.0.0.0
